@@ -78,7 +78,7 @@ Ext.define('FinanceMon.view.main.Main', {
     },
 
     items: [
-        {
+        /*{
             title: 'Home',
             iconCls: 'fa-home',
             // The following grid shares a store with the classic version's grid as well!
@@ -101,22 +101,22 @@ Ext.define('FinanceMon.view.main.Main', {
             bind: {
                 html: '{loremIpsum}'
             }
-        },
+        },*/
         {
-            title: 'Quotes',
+            title: 'QuotesList',
             iconCls: 'fa-users',
             items: [
                 {
                     xtype: 'quotesList'
                 }
             ]
-        },
+        }/*,
         {
             title: 'Settings',
             iconCls: 'fa-cog',
             bind: {
                 html: '{loremIpsum}'
             }
-        }
+        }*/
     ]
 });

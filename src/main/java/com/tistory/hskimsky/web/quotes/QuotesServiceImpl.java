@@ -1,8 +1,17 @@
 package com.tistory.hskimsky.web.quotes;
 
 import com.tistory.hskimsky.model.Quote;
+import org.apache.hadoop.hbase.Cell;
+import org.apache.hadoop.hbase.CellUtil;
+import org.apache.hadoop.hbase.client.Get;
+import org.apache.hadoop.hbase.client.Result;
+import org.apache.hadoop.hbase.client.Table;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -15,13 +24,39 @@ import java.util.Map;
 @Service
 public class QuotesServiceImpl implements QuotesService {
 
-    // TODO
-    /*@Autowired
-    private HTable htable;*/
+    private Logger logger = LoggerFactory.getLogger(QuotesServiceImpl.class);
+
+    private static final String SEPARATOR = "^";
+
+    @Autowired
+    private Table table;
 
     @Override
-    public List<Quote> getQuotes(Map<String, Object> params) {
-        return dummyQuotes();// FIXME
+    public List<Quote> getQuotes(Map<String, Object> params) throws IOException {
+        String code = params.get("companyCode").toString();
+        int dist_key = Integer.parseInt(code) % 3;
+        long fromDateTimestamp = Long.parseLong(params.get("fromDate").toString());
+        long toDateTimestamp = Long.parseLong(params.get("toDate").toString()) + 1;
+
+        Get get = new Get((dist_key + SEPARATOR + code).getBytes()).
+                addFamily("quote".getBytes()).
+                setTimeRange(fromDateTimestamp, toDateTimestamp);
+
+        List<Quote> quotes = new ArrayList<>();
+        Quote quote = null;
+        Result result = this.table.get(get);
+        while (result.advance()) {
+            Cell cell = result.current();
+            logger.debug("cell = {}", cell);
+
+            String date = new String(CellUtil.cloneQualifier(cell));
+            // [start]^[high]^[low]^[finish]^[quantity]
+            String[] values = new String(CellUtil.cloneValue(cell)).split("\\" + SEPARATOR, Integer.MAX_VALUE);
+
+            quote = new Quote(code, date, values[0], values[1], values[2], values[3], values[4]);
+            quotes.add(quote);
+        }
+        return quotes;
     }
 
     private List<Quote> dummyQuotes() {

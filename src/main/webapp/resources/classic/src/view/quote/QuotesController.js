@@ -3,6 +3,25 @@ Ext.define('FinanceMon.view.quote.QuotesController', {
     alias: 'controller.quotesController',
 
     onAfterrender: function (grid) {
-        grid.getStore().reload();
+    },
+
+    getButtonHandler: function (button, e) {
+        var refs = this.getReferences(),
+            companyCode = refs.companyCode,
+            fromDate = refs.fromDate,
+            toDate = refs.toDate,
+            quotesGrid = button.up('grid');
+
+        var params = {
+            companyCode: companyCode.getValue(),
+            fromDate: fromDate.getValue().getTime(),
+            toDate: toDate.getValue().getTime()
+        };
+
+        console.log(params);
+
+        quotesGrid.getStore().reload({
+            params: params
+        });
     }
 });

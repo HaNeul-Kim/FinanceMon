@@ -11,6 +11,54 @@ Ext.define('FinanceMon.view.quote.QuotesView', {
     controller: 'quotesController',
     viewModel: 'quotesModel',
 
+    dockedItems: [
+        {
+            xtype: 'toolbar',
+            dock: 'top',
+            items: [
+                {
+                    xtype: 'textfield',
+                    fieldLabel: 'Code',
+                    labelSeparator: '',
+                    labelAlign: 'right',
+                    labelWidth: 60,
+                    name: 'companyCode',
+                    reference: 'companyCode',
+                    value: '205100'
+                },
+                {
+                    xtype: 'datefield',
+                    fieldLabel: 'From',
+                    labelSeparator: '',
+                    labelAlign: 'right',
+                    labelWidth: 60,
+                    name: 'fromDate',
+                    reference: 'fromDate',
+                    format: 'Y-m-d',
+                    value: Ext.Date.add(new Date(), Ext.Date.DAY, -31)
+                },
+                '~',
+                {
+                    xtype: 'datefield',
+                    fieldLabel: 'To',
+                    labelSeparator: '',
+                    labelAlign: 'right',
+                    labelWidth: 15,
+                    name: 'toDate',
+                    reference: 'toDate',
+                    format: 'Y-m-d',
+                    value: new Date(),
+                    maxValue: new Date()
+                },
+                {
+                    xtype: 'button',
+                    text: 'Get',
+                    handler: 'getButtonHandler'
+                }
+            ]
+        }
+    ],
+
     bind: {
         store: '{quotes}'
     },
